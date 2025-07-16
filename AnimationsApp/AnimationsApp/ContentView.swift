@@ -8,19 +8,18 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var animateVal = 1.0
+    @State private var animateBool = false
     var body: some View {
         VStack{
             Button{
-                withAnimation (.spring(duration: 1,bounce: 0.5)){
-                    animateVal+=360
-                }
-                
+                animateBool.toggle()
             }label: {
-                Circle()
+                Rectangle()
                     .frame(width: 200,height: 200)
-                    .foregroundStyle(.red)
-                    .rotation3DEffect(.degrees(animateVal), axis: (x: 0, y: 1, z: 0))
+                    .foregroundStyle(animateBool ? .blue : .red)
+                    .clipShape(.rect(cornerRadius: animateBool ? 0 : 50))
+                    .animation(.bouncy,value: animateBool)
+                   
             }
             
         }
