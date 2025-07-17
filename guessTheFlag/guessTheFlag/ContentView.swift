@@ -26,6 +26,10 @@ struct ContentView: View {
     @State private var quesNum = 0
     @State private var scoreNum = 0
     
+    
+    @State private var angle: Double = 0
+    @State private var tappedId:Int? = nil
+    
     var body: some View {
        
             ZStack{
@@ -48,13 +52,24 @@ struct ContentView: View {
                                 Image(shuffledCountries[i])
                                     .flagStyle()
                                     .onTapGesture {
-                                        selectedFlag=shuffledCountries[i]
-                                        showScore=true
-                                        alertTitle = matchFlags(selectedFlag) ? "✅ Correct!" : "❌ Wrong!"
-                                        
+                                        withAnimation(.easeInOut(duration: 1.5)) {
+                                            selectedFlag = shuffledCountries[i]
+                                            tappedId = i
+                                            showScore = true
+                                            alertTitle = matchFlags(selectedFlag) ? "✅ Correct!" : "❌ Wrong!"
+                                        }
                                     }
                                     .shadow(color: .black, radius: 10)
-                               
+                                    .rotation3DEffect(
+                                        Angle(degrees: tappedId == i ? angle : 0),
+                                        axis: (x: 0, y: 1, z: 0),
+                                        perspective: 0.5
+                                    )
+                                    .animation(
+                                        .easeInOut(duration: 2),
+                                        value: tappedId
+                                    )
+                                    .opacity(tappedId == nil || tappedId == i ? 1 : 0.25)
                             }
                           
                         }
@@ -78,7 +93,6 @@ struct ContentView: View {
             ) {
                 Button("OK", role: .cancel) {
                     askQuestion()
-                    reset()
                    
                 }
             } message: {
@@ -91,15 +105,21 @@ struct ContentView: View {
     }
     
     func askQuestion() {
-        reset()
-        quesNum+=1
+        if quesNum >= 10 {
+            quesNum = 0
+            scoreNum = 0
+        }
+        quesNum += 1
         shuffledCountries = countryNames.shuffled()
         ans = Int.random(in: 0...2)
+        tappedId = nil
     }
+
 
     func matchFlags(_ inputFlag:String)->Bool{
         if shuffledCountries[ans] == inputFlag{
             scoreNum+=1
+            angle += 360
             return true
         }
         return false
