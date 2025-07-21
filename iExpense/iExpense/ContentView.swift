@@ -7,25 +7,89 @@
 
 import SwiftUI
 
-struct User:Codable {
-    let firstName: String
-    let lastName: String
+struct ExpenseItem :Identifiable,Codable{
+    var id = UUID()
+    let name: String
+    let type: String
+    let amount: Double
+}
+
+@Observable
+class Expenses  {
+    
+    init() {
+        if let savedItems = UserDefaults.standard.data(forKey: "Items") {
+            if let decodedItems = try? JSONDecoder().decode([ExpenseItem].self, from: savedItems) {
+                items = decodedItems
+                return
+            }
+        }
+        
+        items = []
+    }
+    
+    var items = [ExpenseItem]() {
+        didSet {
+            if let encoded = try? JSONEncoder().encode(items) {
+                UserDefaults.standard.set(encoded, forKey: "Items")
+            }
+        }
+    }
+    
 }
 
 struct ContentView: View {
-    //numbers
-    @State private var user = User(firstName: "Taylor", lastName: "Swift")
+    @State private var expenses = Expenses()
+    @State private var showingAddExpense = false
+
     
     var body: some View {
-        VStack{
-            Button("Save User"){
-                let encoder = JSONEncoder()
-                if let data = try? encoder.encode(user){
-                    UserDefaults.standard.set(data, forKey: "UserData")
+        NavigationStack {
+            List {
+                ForEach(expenses.items) { item in
+                    HStack{
+                        Text(item.name)
+                            .font(.title2)
+                        Spacer()
+                        VStack{
+                            
+                            Text("\(item.amount,specifier:"%.2f")")
+                                .font(.title3)
+                            
+                            Text(item.type)
+                                .font(.caption)
+                                .padding(.horizontal)
+                                .background(.blue)
+                                .clipShape(.capsule)
+                        }
+                        
+                    }
+                    
+                }.onDelete(perform: removeEle)
+            }
+            .navigationTitle("iExpense")
+            .toolbar {
+                ToolbarItem{
+                    Button{
+                        showingAddExpense = true
+                    }label: {
+                        Image(systemName: "plus.circle.fill")
+                    }
+                    
+                    
                 }
             }
+            .sheet(isPresented: $showingAddExpense) {
+                AddView(expenses: expenses)
+                    .presentationDetents([.medium])
+            }
         }
+      
        
+    }
+    
+    func removeEle(at offSet : IndexSet){
+        expenses.items.remove(atOffsets: offSet)
     }
     
 }
