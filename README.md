@@ -10,7 +10,7 @@ This repo tracks my daily progress, projects, and experiments.
 - Stay consistent, stay sharp
 
 ### 📅 Daily Log
-Day-by-day progress lives in the [log](./log.md) (or inside this repo).  
+Day-by-day progress lives in the [log](https://x.com/t0bias1160) (or inside this repo).  
 From layout basics to full app builds — it’s all here.
 
 ### ⚙️ Tools
