@@ -10,7 +10,7 @@ import SwiftUI
 struct AddView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var thisName:String = ""
-    @State private var arrType:[String] = ["cosmetcs","study","party"]
+    @State private var arrType:[String] = ExpenseItem.allTypes
     @State private var thisType:String = "study"
     @State private var thisAmount:Double = 0
     
@@ -22,7 +22,7 @@ struct AddView: View {
             Form{
                 TextField("Enter Name",text: $thisName)
                 Section{
-                    Slider(value: $thisAmount,in: 0...1000,step: 1)
+                    Slider(value: $thisAmount,in: 0...10000,step: 1)
                     Text("Amount :\(thisAmount.formatted())")
                 }
                 
@@ -31,7 +31,6 @@ struct AddView: View {
                         Text("\(ele)")
                     }
                 }
-                
             }
             .navigationTitle("Add Item")
             .navigationBarTitleDisplayMode(.inline)
@@ -52,8 +51,6 @@ struct AddView: View {
                     Button("Cancel"){
                         dismiss()
                     }
-                   
-                        
                 }
 
             }

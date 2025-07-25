@@ -7,11 +7,26 @@
 
 import SwiftUI
 
-struct ExpenseItem :Identifiable,Codable{
+struct ExpenseItem: Identifiable, Codable {
     var id = UUID()
     let name: String
     let type: String
     let amount: Double
+    
+    static let allTypes = [
+        "cosmetics", "study", "party", "food", "transport", "health", "clothing",
+        "subscriptions", "entertainment", "education", "gifts", "travel", "rent",
+        "utilities", "groceries", "investment", "savings", "donation", "fitness", "insurance"
+    ]
+    
+    var amountaColor: Color {
+        switch self.amount {
+        case 0..<100: return .green
+        case 100..<1000: return .orange
+        case 1000..<10000: return .red
+        default: return .blue
+        }
+    }
 }
 
 @Observable
@@ -58,11 +73,10 @@ struct ContentView: View {
                             
                             Text(item.type)
                                 .font(.caption)
-                                .padding(.horizontal)
-                                .background(.blue)
+                                .frame(width: 80, height: 20)
+                                .background(item.amountaColor)
                                 .clipShape(.capsule)
                         }
-                        
                     }
                     
                 }.onDelete(perform: removeEle)
@@ -75,8 +89,6 @@ struct ContentView: View {
                     }label: {
                         Image(systemName: "plus.circle.fill")
                     }
-                    
-                    
                 }
             }
             .sheet(isPresented: $showingAddExpense) {
